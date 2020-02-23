@@ -35,6 +35,9 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringValueResolver;
 
 /**
+ * 这个类非常复杂，需要结合其父类BeanPostProcessor来解释，
+ * 先看BeanPostProcessor，然后看下面的注释：
+ * <p>
  * {@link org.springframework.beans.factory.config.BeanPostProcessor}
  * implementation that passes the ApplicationContext to beans that
  * implement the {@link EnvironmentAware}, {@link EmbeddedValueResolverAware},
@@ -49,7 +52,6 @@ import org.springframework.util.StringValueResolver;
  * @author Juergen Hoeller
  * @author Costin Leau
  * @author Chris Beams
- * @since 10.10.2003
  * @see org.springframework.context.EnvironmentAware
  * @see org.springframework.context.EmbeddedValueResolverAware
  * @see org.springframework.context.ResourceLoaderAware
@@ -57,6 +59,7 @@ import org.springframework.util.StringValueResolver;
  * @see org.springframework.context.MessageSourceAware
  * @see org.springframework.context.ApplicationContextAware
  * @see org.springframework.context.support.AbstractApplicationContext#refresh()
+ * @since 10.10.2003
  */
 class ApplicationContextAwareProcessor implements BeanPostProcessor {
 
@@ -74,6 +77,14 @@ class ApplicationContextAwareProcessor implements BeanPostProcessor {
 	}
 
 
+	/**
+	 * 核心方法
+	 *
+	 * @param bean     the new bean instance
+	 * @param beanName the name of the bean
+	 * @return
+	 * @throws BeansException
+	 */
 	@Override
 	@Nullable
 	public Object postProcessBeforeInitialization(final Object bean, String beanName) throws BeansException {
@@ -91,14 +102,21 @@ class ApplicationContextAwareProcessor implements BeanPostProcessor {
 				invokeAwareInterfaces(bean);
 				return null;
 			}, acc);
-		}
-		else {
+		} else {
+			/**
+			 * 核心处理
+			 */
 			invokeAwareInterfaces(bean);
 		}
 
 		return bean;
 	}
 
+	/**
+	 * 核心逻辑处理
+	 *
+	 * @param bean
+	 */
 	private void invokeAwareInterfaces(Object bean) {
 		if (bean instanceof Aware) {
 			if (bean instanceof EnvironmentAware) {
@@ -116,6 +134,12 @@ class ApplicationContextAwareProcessor implements BeanPostProcessor {
 			if (bean instanceof MessageSourceAware) {
 				((MessageSourceAware) bean).setMessageSource(this.applicationContext);
 			}
+			/**
+			 * spring帮助我们set一个applicationContext对象
+			 * 所以当我们自己创建的一个对象实现了ApplicationContextAware对象只需要提供setter就能得到applicationContext
+			 *
+			 * 例如：在singleton中使用了prototype，就是通过实现ApplicationContextAware接口实现
+			 */
 			if (bean instanceof ApplicationContextAware) {
 				((ApplicationContextAware) bean).setApplicationContext(this.applicationContext);
 			}

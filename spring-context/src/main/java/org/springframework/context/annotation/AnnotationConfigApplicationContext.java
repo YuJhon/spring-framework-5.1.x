@@ -44,17 +44,26 @@ import org.springframework.util.Assert;
  *
  * @author Juergen Hoeller
  * @author Chris Beams
- * @since 3.0
  * @see #register
  * @see #scan
  * @see AnnotatedBeanDefinitionReader
  * @see ClassPathBeanDefinitionScanner
  * @see org.springframework.context.support.GenericXmlApplicationContext
+ * @since 3.0
  */
 public class AnnotationConfigApplicationContext extends GenericApplicationContext implements AnnotationConfigRegistry {
 
+	/**
+	 * 顾名思义，该类是一个reader（读取器）
+	 * 读取啥？还是顾名思义AnnotatedBeanDefinition意思是读取一个被加了注解的bean（beanDefinition bean定义）
+	 * 这个类在构造方法中进行实例化
+	 */
 	private final AnnotatedBeanDefinitionReader reader;
 
+	/**
+	 * 同理，这是一个扫描器，扫描所有加了注解的bean
+	 * 也是在构造方法中进行实例化
+	 */
 	private final ClassPathBeanDefinitionScanner scanner;
 
 
@@ -62,13 +71,28 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * Create a new AnnotationConfigApplicationContext that needs to be populated
 	 * through {@link #register} calls and then manually {@linkplain #refresh refreshed}.
 	 */
+	/**
+	 * 1.初始化一个bean的读取器和扫描器(具体描述查看属性中的注释)
+	 * <p>
+	 * 2.默认构造函数，如果直接调用这个默认构造方法，需要在稍后通过调用其register()去注册配置类（javaconfig）,
+	 * 并调用refresh()方法刷新容器，从而触发容器对bean的载入、解析和注册过程。
+	 * （知识点联想和补充：类的加载过程：加载->验证->准备->解析->初始化->使用->卸载）
+	 */
 	public AnnotationConfigApplicationContext() {
+		// 初始化一个读取器和扫描器
+		/**
+		 * 创建一个读取注解的Bean, 定义读取器
+		 *
+		 * 什么是bean定义？BeanDefinition  -- (曾被问到)
+		 */
 		this.reader = new AnnotatedBeanDefinitionReader(this);
+
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}
 
 	/**
 	 * Create a new AnnotationConfigApplicationContext with the given DefaultListableBeanFactory.
+	 *
 	 * @param beanFactory the DefaultListableBeanFactory instance to use for this context
 	 */
 	public AnnotationConfigApplicationContext(DefaultListableBeanFactory beanFactory) {
@@ -83,9 +107,21 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * @param componentClasses one or more component classes &mdash; for example,
 	 * {@link Configuration @Configuration} classes
 	 */
+	/**
+	 * 这个构造方法需要传入一个被javaconfig注解了的配置类
+	 * 然后会把这个被注解了javaconfig的类通过注解读取器读取后，从而解析
+	 *
+	 * @param componentClasses
+	 */
 	public AnnotationConfigApplicationContext(Class<?>... componentClasses) {
+		// 这里由于它有父类，所以先调用父类的构造器，
+		// public GenericApplicationContext() {this.beanFactory = new DefaultListableBeanFactory();}
+		// 然后调用自己的构造器
+		// 在自己的构造器中，初始化了一个读取器reader和扫描器scanner
 		this();
+
 		register(componentClasses);
+
 		refresh();
 	}
 
@@ -93,6 +129,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * Create a new AnnotationConfigApplicationContext, scanning for components
 	 * in the given packages, registering bean definitions for those components,
 	 * and automatically refreshing the context.
+	 *
 	 * @param basePackages the packages to scan for component classes
 	 */
 	public AnnotationConfigApplicationContext(String... basePackages) {
@@ -119,6 +156,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * <p>Default is {@link org.springframework.context.annotation.AnnotationBeanNameGenerator}.
 	 * <p>Any call to this method must occur prior to calls to {@link #register(Class...)}
 	 * and/or {@link #scan(String...)}.
+	 *
 	 * @see AnnotatedBeanDefinitionReader#setBeanNameGenerator
 	 * @see ClassPathBeanDefinitionScanner#setBeanNameGenerator
 	 */
@@ -154,6 +192,15 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * @see #scan(String...)
 	 * @see #refresh()
 	 */
+	/**
+	 * 注册当个Bean给容器
+	 * 比如：有新加的类可以使用这个方法
+	 * 但是注册之后需要手动调用refresh方法去触发容器解析注解
+	 *
+	 * 可以注册一个配置类，也可以注册一个Bean
+	 *
+	 * @param componentClasses one or more component classes,
+	 */
 	@Override
 	public void register(Class<?>... componentClasses) {
 		Assert.notEmpty(componentClasses, "At least one component class must be specified");
@@ -164,6 +211,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * Perform a scan within the specified base packages.
 	 * <p>Note that {@link #refresh()} must be called in order for the context
 	 * to fully process the new classes.
+	 *
 	 * @param basePackages the packages to scan for component classes
 	 * @see #register(Class...)
 	 * @see #refresh()
@@ -184,11 +232,12 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * class-declared annotations, and optionally providing explicit constructor
 	 * arguments for consideration in the autowiring process.
 	 * <p>The bean name will be generated according to annotated component rules.
-	 * @param beanClass the class of the bean
+	 *
+	 * @param beanClass            the class of the bean
 	 * @param constructorArguments argument values to be fed into Spring's
-	 * constructor resolution algorithm, resolving either all arguments or just
-	 * specific ones, with the rest to be resolved through regular autowiring
-	 * (may be {@code null} or empty)
+	 *                             constructor resolution algorithm, resolving either all arguments or just
+	 *                             specific ones, with the rest to be resolved through regular autowiring
+	 *                             (may be {@code null} or empty)
 	 * @since 5.0
 	 */
 	public <T> void registerBean(Class<T> beanClass, Object... constructorArguments) {
@@ -199,12 +248,13 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * Register a bean from the given bean class, deriving its metadata from
 	 * class-declared annotations, and optionally providing explicit constructor
 	 * arguments for consideration in the autowiring process.
-	 * @param beanName the name of the bean (may be {@code null})
-	 * @param beanClass the class of the bean
+	 *
+	 * @param beanName             the name of the bean (may be {@code null})
+	 * @param beanClass            the class of the bean
 	 * @param constructorArguments argument values to be fed into Spring's
-	 * constructor resolution algorithm, resolving either all arguments or just
-	 * specific ones, with the rest to be resolved through regular autowiring
-	 * (may be {@code null} or empty)
+	 *                             constructor resolution algorithm, resolving either all arguments or just
+	 *                             specific ones, with the rest to be resolved through regular autowiring
+	 *                             (may be {@code null} or empty)
 	 * @since 5.0
 	 */
 	public <T> void registerBean(@Nullable String beanName, Class<T> beanClass, Object... constructorArguments) {
@@ -218,7 +268,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 
 	@Override
 	public <T> void registerBean(@Nullable String beanName, Class<T> beanClass, @Nullable Supplier<T> supplier,
-			BeanDefinitionCustomizer... customizers) {
+								 BeanDefinitionCustomizer... customizers) {
 
 		this.reader.doRegisterBean(beanClass, supplier, beanName, null, customizers);
 	}

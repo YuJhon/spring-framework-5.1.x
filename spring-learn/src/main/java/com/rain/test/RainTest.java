@@ -13,12 +13,17 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  */
 public class RainTest {
 
-	public static void main(String[] args) {
+	public static final String TEST_BEAN_NAME="indexServiceImpl";
 
+	public static void main(String[] args) {
+		/** annotation/xml/@bean **/
+		/** 1.初始化spring所有前提准备条件 **/
 		AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(RainConfig.class);
 
-		IndexService indexService = (IndexService) ac.getBean("indexServiceImpl");
+		IndexService indexService = (IndexService) ac.getBean(TEST_BEAN_NAME);
 
 		System.out.println(indexService.queryIndex());
+
+
 	}
 }

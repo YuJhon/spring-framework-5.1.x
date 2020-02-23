@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
  * @date 2020-02-23 13:38
  * @version v1.0
  */
-@Repository
+//@Repository
 public class IndexDao {
 }
