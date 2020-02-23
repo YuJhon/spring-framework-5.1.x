@@ -18,4 +18,7 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     // 2.添加spring-context项目依赖
     compile(project(":spring-context"))
+
+    compile group: 'org.aspectj', name: 'aspectjweaver', version: '1.9.5'
+
 }

@@ -1,7 +1,7 @@
 package com.rain.test;
 
 import com.rain.config.RainConfig;
-import com.rain.service.IndexService;
+import com.rain.dao.IndexDao;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
@@ -13,17 +13,16 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  */
 public class RainTest {
 
-	public static final String TEST_BEAN_NAME="indexServiceImpl";
+	public static final String TEST_BEAN_NAME = "indexDao";
 
 	public static void main(String[] args) {
 		/** annotation/xml/@bean **/
 		/** 1.初始化spring所有前提准备条件 **/
 		AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(RainConfig.class);
 
-		IndexService indexService = (IndexService) ac.getBean(TEST_BEAN_NAME);
+		IndexDao indexDao = (IndexDao) ac.getBean(TEST_BEAN_NAME);
 
-		System.out.println(indexService.queryIndex());
-
+		indexDao.queryDataA();
 
 	}
 }

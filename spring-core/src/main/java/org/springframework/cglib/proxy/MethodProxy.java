@@ -202,6 +202,7 @@ public class MethodProxy {
 	}
 
 	/**
+	 *
 	 * Invoke the original method, on a different object of the same type.
 	 * @param obj the compatible object; recursion will result if you use the object passed as the first
 	 * argument to the MethodInterceptor (usually not what you want)

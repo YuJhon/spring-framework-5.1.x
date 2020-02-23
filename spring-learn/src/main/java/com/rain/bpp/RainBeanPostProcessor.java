@@ -15,7 +15,7 @@ import java.lang.reflect.Proxy;
  * @date 2020-02-23 17:34
  * @version v1.0
  */
-@Component
+//@Component
 public class RainBeanPostProcessor implements BeanPostProcessor, PriorityOrdered {
 
 	@Override
