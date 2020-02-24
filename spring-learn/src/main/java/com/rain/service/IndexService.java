@@ -14,4 +14,11 @@ public interface IndexService {
 	 * @return
 	 */
 	String queryIndex();
+
+	/**
+	 * <pre>嵌套调用使用</pre>
+	 *
+	 * @return
+	 */
+	String queryInner();
 }

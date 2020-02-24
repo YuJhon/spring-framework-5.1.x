@@ -16,6 +16,10 @@ public class IndexDao {
 	public void queryDataA() {
 		System.out.println("IndexDao.queryData");
 		/**
+		 * 添加内部方法
+		 */
+		//queryDataB();
+		/**
 		 *
 		 * Spring AOP 失效原因分析：
 		 *
